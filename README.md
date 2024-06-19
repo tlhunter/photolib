@@ -28,8 +28,9 @@ An opinionated tool for managing a library of photographs taken by digital camer
 Here's an example of a filesystem layout:
 
 ```
-~/.config/photolib/libraries.json
+~/.config/photolib/libraries.yaml
 ~/Photos/
+~/Photos/.photolib.db
 ~/Photos/Side Projects/
 ~/Photos/Headshots/
 ~/Photos/Headshots/2024-06-18 XYZ Corp/
@@ -42,3 +43,20 @@ Here's an example of a filesystem layout:
 
 ## Subcommands
 
+- `photolib init <path>`: Create a new library
+- `photolib check <namespace?>`: Check for library errors (e.g. mismatched dates)
+- `photolib import <path>`: Copy or move files to a library
+- `photolib dupes <namespace?>`: Check for photos duplicated across different shoots
+- `photolib report <namespace?>`: Provide library statistics such as focal length frequency
+- `photolib fix`: Prompt user to fix mismatched dates, delete duplicates, etc.
+- `photolib list collections`: List all collections for the current library
+- `photolib list shoots <collection?>`: List all shoots for library or specified collection
+- `photolib list photos <namespace?>`: List all photos (DSC001) for given shoot
+- `photolib prune <namespace?> --min-rating=1`: Delete photos below a certain rating
+
+In these commands, `<path>` refers to a filesystem path, `<namespace>` refers to either a library, a library/collection, or a library/collection/shoot.
+
+Some things can be assumed, for example if the current working directory is inside of a photolib library then photolib will assumed the commands are for that library.
+Commands which delete files probably shouldn't make such assumptions.
+
+Deletions will send files to trash by default, e.g. by shelling out to `gio trash <filename>` on Linux.

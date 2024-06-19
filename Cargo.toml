@@ -1,0 +1,8 @@
+[package]
+name = "photolib"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rawloader = "0.37.1"
+xdg = "2.5.2"

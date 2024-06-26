@@ -2,6 +2,8 @@
 
 An opinionated tool for managing a library of photographs taken by digital cameras.
 
+Note that I'm teaching myself Rust while working on this project. It may never reach production-ready status.
+
 ## Goals
 
 - Always handle pairs of photos, such as `DSC123.JPG` and `DSC123.RAW`, in tandem
@@ -28,7 +30,7 @@ An opinionated tool for managing a library of photographs taken by digital camer
 Here's an example of a filesystem layout:
 
 ```
-~/.config/photolib/libraries.yaml
+~/.config/photolib/config.ini
 ~/Photos/
 ~/Photos/.photolib.db
 ~/Photos/Side Projects/
@@ -43,7 +45,8 @@ Here's an example of a filesystem layout:
 
 ## Subcommands
 
-- `photolib init <path>`: Create a new library
+- `photolib init`: Initialize the configuration file
+- `photolib new <path>`: Create a new library
 - `photolib check <namespace?>`: Check for library errors (e.g. mismatched dates)
 - `photolib import <path>`: Copy or move files to a library
 - `photolib dupes <namespace?>`: Check for photos duplicated across different shoots

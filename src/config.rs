@@ -1,4 +1,4 @@
-use std::{fs::File, io::Write};
+use ini::configparser::ini::Ini;
 
 use xdg::BaseDirectories;
 
@@ -7,10 +7,15 @@ fn get_base_directories() -> BaseDirectories {
 }
 
 pub fn create_config_file() {
+    // TODO: If already configured then don't clobber config file
     let config_path = get_base_directories()
         .place_config_file("config.ini")
         .expect("cannot create configuration directory");
-    println!("{:?}", config_path);
-    let mut config_file = File::create(config_path).unwrap();
-    write!(&mut config_file, "configured = 1").unwrap();
+    let mut conf = Ini::new();
+    conf.set("libraries", "default", Some(String::from("~/Photos")));
+    conf.write(config_path.to_str().unwrap()).unwrap();
 }
+
+pub fn add_library(name: String, path: String) {}
+
+pub fn remove_library(name: String) {}

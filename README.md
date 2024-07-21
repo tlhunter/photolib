@@ -46,7 +46,7 @@ Here's an example of a filesystem layout:
 ## Subcommands
 
 - `photolib init`: Initialize the configuration file
-- `photolib new <path>`: Create a new library
+- `photolib new <path> (<alias>)`: Create a new library
 - `photolib check <namespace?>`: Check for library errors (e.g. mismatched dates)
 - `photolib import <path>`: Copy or move files to a library
 - `photolib dupes <namespace?>`: Check for photos duplicated across different shoots

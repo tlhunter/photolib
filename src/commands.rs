@@ -21,6 +21,12 @@ pub fn get_commands() -> ArgMatches {
                         .action(ArgAction::Set)
                         .required(true)
                 )
+                .arg(
+                    Arg::new("alias")
+                        .help("An easy-to-type alias for the library, defaulting to the directory name.")
+                        .action(ArgAction::Set)
+                        .required(false)
+                )
         )
 
         .subcommand(

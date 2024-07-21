@@ -16,6 +16,6 @@ pub fn create_config_file() {
     conf.write(config_path.to_str().unwrap()).unwrap();
 }
 
-pub fn add_library(name: String, path: String) {}
+// pub fn add_library(name: String, path: String) {}
 
-pub fn remove_library(name: String) {}
+// pub fn remove_library(name: String) {}

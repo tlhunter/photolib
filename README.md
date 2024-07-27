@@ -63,3 +63,10 @@ Some things can be assumed, for example if the current working directory is insi
 Commands which delete files probably shouldn't make such assumptions.
 
 Deletions will send files to trash by default, e.g. by shelling out to `gio trash <filename>` on Linux.
+
+
+# Compilation Requisites
+
+```sh
+sudo apt-get install libgexiv2-dev
+```

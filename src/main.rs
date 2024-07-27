@@ -10,15 +10,20 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
+  extern crate rexiv2;
+
   #[test]
-  fn raw_test() {
-    // so this library doesn't support RAW files from my 5 year old camera.
-    // probably going to need to use this C++ library instead.
-    // gonna have to tumble down the rust rabbit hole pretty deep.
-    // https://github.com/felixc/rexiv2/blob/main/SETUP.md
-    let path = "/home/tlhunter/Photographs/San Francisco/2024-02-24 South SF Flickr Walk a7rIV/TLH01595.ARW";
-    let image = rawloader::decode_file(path).unwrap();
-    dbg!(image.width);
-    assert_eq!(image.width, 123);
+  fn raw_test_2() {
+      let path = "/home/tlhunter/Photographs/San Francisco/2024-02-24 South SF Flickr Walk a7rIV/TLH01595.ARW";
+      let meta = rexiv2::Metadata::new_from_path(path).unwrap();
+      println!("{:?}", meta);
+      println!("Exposure: {:?}", meta.get_tag_multiple_strings("Exif.Photo.ExposureTime"));
+      println!("FStop: {:?}", meta.get_tag_multiple_strings("Exif.Photo.FNumber"));
+      println!("Focal: {:?}", meta.get_tag_multiple_strings("Exif.Photo.FocalLength"));
+      println!("Lens: {:?}", meta.get_tag_multiple_strings("Exif.Photo.LensModel"));
+      println!("Make: {:?}", meta.get_tag_multiple_strings("Exif.Image.Make"));
+      println!("Model: {:?}", meta.get_tag_multiple_strings("Exif.Image.Model"));
+      println!("Date: {:?}", meta.get_tag_multiple_strings("Exif.Image.DateTime"));
+      // println!("{:?}", meta.get_exif_tags());
   }
 }

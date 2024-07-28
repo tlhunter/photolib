@@ -14,8 +14,8 @@ pub struct PhotoLibMetadata {
   camera: String,
   lens: Option<String>, // The Lumix GX1 doesn't provide this
   focal: String,
-  fstop: String,
-  exposure: String,
+  aperture: String,
+  shutter: String,
   iso: String,
 }
 
@@ -24,11 +24,10 @@ impl PhotoLibMetadata {
     let meta = rexiv2::Metadata::new_from_path(path).unwrap();
 
     let camera_make = meta.get_tag_string("Exif.Image.Make").unwrap();
-    let camera_model = meta.get_tag_string("Exif.Image.Model").ok();
 
     // a camera might only provide the make but no model? TODO test case
-    let camera = match camera_model {
-      Some(model) => format!("{camera_make} {model}"),
+    let camera = match meta.get_tag_string("Exif.Image.Model").ok() {
+      Some(camera_model) => format!("{camera_make} {camera_model}"),
       None => camera_make,
     };
 
@@ -38,8 +37,8 @@ impl PhotoLibMetadata {
       camera,
       lens: meta.get_tag_string("Exif.Photo.LensModel").ok(),
       focal: meta.get_tag_string("Exif.Photo.FocalLength").unwrap(),
-      fstop: meta.get_tag_string("Exif.Photo.FNumber").unwrap(),
-      exposure: meta.get_tag_string("Exif.Photo.ExposureTime").unwrap(),
+      aperture: meta.get_tag_string("Exif.Photo.FNumber").unwrap(),
+      shutter: meta.get_tag_string("Exif.Photo.ExposureTime").unwrap(),
       iso: meta.get_tag_string("Exif.Photo.ISOSpeedRatings").unwrap(),
     }
   }
@@ -54,8 +53,8 @@ impl PhotoLibMetadata {
         Some(lens) => lens.to_string(),
       },
       self.get_flength_display(),
-      self.get_fstop_display(),
-      self.get_exposure_display(),
+      self.get_aperture_display(),
+      self.get_shutter_display(),
       self.get_iso_display()
     );
   }
@@ -66,17 +65,17 @@ impl PhotoLibMetadata {
     return format!("{focal}mm");
   }
 
-  pub fn get_fstop_display(&self) -> String {
-    let fstop = exif_string_division(self.fstop.to_string());
-    return format!("f/{fstop}");
+  pub fn get_aperture_display(&self) -> String {
+    let aperture = exif_string_division(self.aperture.to_string());
+    return format!("f/{aperture}");
   }
 
   // bypassing exif_string_division as 1/200 looks better than 0.005
   // TODO: Need to simplify fractions as GX1 provides 10/2000 
-  pub fn get_exposure_display(&self) -> String {
-    // let val = exif_string_division(self.exposure.to_string());
-    let exposure = self.exposure.to_string();
-    return format!("{exposure}s");
+  pub fn get_shutter_display(&self) -> String {
+    // let val = exif_string_division(self.shutter.to_string());
+    let shutter = self.shutter.to_string();
+    return format!("{shutter}s");
   }
 
   pub fn get_iso_display(&self) -> String {
@@ -89,8 +88,8 @@ fn exif_string_division(input: String) -> String {
     match input.split_once('/') {
       None => "Unknown".to_owned(),
       Some(parts) => {
-        let numerator = parts.0.parse::<i32>().unwrap();
-        let denominator = parts.1.parse::<i32>().unwrap();
+        let numerator = parts.0.parse::<f32>().unwrap();
+        let denominator = parts.1.parse::<f32>().unwrap();
         return (numerator / denominator).to_string();
       },
     }

@@ -45,6 +45,7 @@ Here's an example of a filesystem layout:
 
 ## Subcommands
 
+- `photolib info <path>`: Retrieve EXIF information from image
 - `photolib init`: Initialize the configuration file
 - `photolib new <path> (<alias>)`: Create a new library
 - `photolib check <namespace?>`: Check for library errors (e.g. mismatched dates)

@@ -1,12 +1,18 @@
 use clap::ArgMatches;
 
-use crate::config;
+use crate::{config, metadata};
 use std::path::Path;
 
 pub fn dispatch(cmd: ArgMatches) {
     match cmd.subcommand() {
         Some(("init", _matches)) => {
             config::create_config_file();
+        }
+
+        Some(("info", new_matches)) => {
+            let path: &String = new_matches.get_one("path").expect("path is required");
+            let image = crate::metadata::PhotoLibMetadata::new(path);
+            println!("{}", image.to_string());
         }
 
         Some(("new", new_matches)) => {

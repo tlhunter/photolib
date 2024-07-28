@@ -13,6 +13,17 @@ pub fn get_commands() -> ArgMatches {
         )
 
         .subcommand(
+            Command::new("info")
+                .about("Retrieves EXIF metadata information from image file")
+                .arg(
+                    Arg::new("path")
+                        .help("The path to an image file.")
+                        .action(ArgAction::Set)
+                        .required(true)
+                )
+        )
+
+        .subcommand(
             Command::new("new")
                 .about("Creates a new photo library at the specified location.")
                 .arg(

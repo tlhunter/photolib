@@ -1,6 +1,9 @@
+use xmp_toolkit::{XmpFile, XmpMeta};
+
 extern crate rexiv2;
 use regex::Regex;
-use std::fs;
+use std::{fs, str::FromStr};
+extern crate xmp_toolkit;
 
 /**
  * Regarding dates: AFAICT, EXIF dates are in the local time zone that the photo
@@ -146,6 +149,35 @@ impl PhotoRating {
   }
 }
   */
+// TODO: Merge into PhotoLibMetadata
+#[derive(Debug)]
+pub struct PhotoLibXmp {
+  rating: i8,
+  raw: String,
+  edits: i32,
+}
+
+impl PhotoLibXmp {
+  pub fn new(path: &str) -> PhotoLibXmp {
+    // https://github.com/adobe/xmp-toolkit-rs/issues/234#issuecomment-2270123760
+    // let meta = XmpMeta::from_file(path).unwrap();
+
+    let raw_xmp = std::fs::read(path).unwrap();
+    let raw_xmp = String::from_utf8(raw_xmp).unwrap();
+    let meta = XmpMeta::from_str(&raw_xmp).unwrap();
+
+    println!("XMP {:?}", meta);
+
+    let foo = meta.property("darktable", "x/rdf/rdf:Description");
+    println!("foo {:?}", foo);
+
+    return PhotoLibXmp {
+      rating: 1,
+      raw: "foo".to_string(),
+      edits: 17,
+    }
+  }
+}
 
 fn exif_string_division(input: String) -> String {
     match input.split_once('/') {
@@ -186,8 +218,8 @@ pub fn extract_rating_from_xmp(path: &str)-> Option<i8> {
 
 #[cfg(test)]
 mod tests {
-  use crate::metadata::PhotoLibMetadata;
   use crate::metadata::extract_rating_from_xmp;
+  use crate::metadata::{PhotoLibMetadata, PhotoLibXmp};
 
   #[test]
   fn raw_test_sony_arw() {
@@ -207,5 +239,10 @@ mod tests {
   #[test]
   fn xmp_test() {
     println!("Rating: {}", extract_rating_from_xmp("/home/tlhunter/Photographs/Potrero Hill/2024-02-22 Marine One a7ii 40mm/DSC00151.ARW.xmp").unwrap());
+  }
+
+  #[test]
+  fn xmp_rating_sony() {
+    println!("{:?}", PhotoLibXmp::new("/home/tlhunter/Photographs/Potrero Hill/2023-12-20 Downtown Night/TLH00526.ARW.xmp"));
   }
 }

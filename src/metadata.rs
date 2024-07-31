@@ -1,4 +1,7 @@
+use xmp_toolkit::{XmpFile, XmpMeta};
+
 extern crate rexiv2;
+extern crate xmp_toolkit;
 
 /**
  * Regarding dates: AFAICT, EXIF dates are in the local time zone that the photo
@@ -84,6 +87,28 @@ impl PhotoLibMetadata {
   }
 }
 
+// TODO: Merge into PhotoLibMetadata
+#[derive(Debug)]
+pub struct PhotoLibXmp {
+  rating: i8,
+  raw: String,
+  edits: i32,
+}
+
+impl PhotoLibXmp {
+  pub fn new(path: &str) -> PhotoLibXmp {
+    let meta = XmpMeta::from_file(path).unwrap();
+    println!("{:?}", meta);
+    // xmp_toolkit::XmpFile::open_file(&mut file, path, flags).unwrap();
+    // println!("{:?}", file);
+    return PhotoLibXmp {
+      rating: 1,
+      raw: "foo".to_string(),
+      edits: 17,
+    }
+  }
+}
+
 fn exif_string_division(input: String) -> String {
     match input.split_once('/') {
       None => "Unknown".to_owned(),
@@ -104,7 +129,7 @@ fn convert_exif_date(input: String) -> String {
 
 #[cfg(test)]
 mod tests {
-  use crate::metadata::PhotoLibMetadata;
+  use crate::metadata::{PhotoLibMetadata, PhotoLibXmp};
 
   #[test]
   fn raw_test_sony_arw() {
@@ -119,5 +144,10 @@ mod tests {
   #[test]
   fn raw_test_lumix_rw2() {
     println!("{}", PhotoLibMetadata::new("/home/tlhunter/Photographs/P1120849.RW2").to_string());
+  }
+
+  #[test]
+  fn xmp_rating_sony() {
+    println!("{:?}", PhotoLibXmp::new("/home/tlhunter/Photographs/Potrero Hill/2023-12-20 Downtown Night/TLH00526.ARW.xmp"));
   }
 }

@@ -1,6 +1,6 @@
 use clap::ArgMatches;
 
-use crate::{config, metadata};
+use crate::{config, metadata::PhotoLibXmp};
 use std::path::Path;
 
 pub fn dispatch(cmd: ArgMatches) {
@@ -13,6 +13,9 @@ pub fn dispatch(cmd: ArgMatches) {
             let path: &String = new_matches.get_one("path").expect("path is required");
             let image = crate::metadata::PhotoLibMetadata::new(path);
             println!("{}", image.to_string());
+
+            // let meta = PhotoLibXmp::new("/home/tlhunter/Photographs/Potrero Hill/2024-02-22 Marine One a7ii 40mm/DSC00151.ARW.xmp");
+            // println!("{:?}", meta);
         }
 
         Some(("new", new_matches)) => {

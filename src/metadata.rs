@@ -1,4 +1,6 @@
 extern crate rexiv2;
+use regex::Regex;
+use std::fs;
 
 /**
  * Regarding dates: AFAICT, EXIF dates are in the local time zone that the photo
@@ -102,9 +104,25 @@ fn convert_exif_date(input: String) -> String {
   return converted.to_string();
 }
 
+// TODO: this should be parsed as XML instead of using regex
+pub fn extract_rating_from_xmp(path: &str)-> Option<i8> {
+  let contents = fs::read_to_string(path).unwrap();
+  let re = Regex::new(r#"xmp:Rating="(?<rating>.+)""#).unwrap();
+  let Some(captures) = re.captures(&contents) else {
+    return None;
+  };
+  let rating: [&str; 1] = captures.extract().1;
+  let Ok(rating) = rating[0].parse::<i8>() else {
+    return None;
+  };
+
+  return Some(rating);
+}
+
 #[cfg(test)]
 mod tests {
   use crate::metadata::PhotoLibMetadata;
+  use crate::metadata::extract_rating_from_xmp;
 
   #[test]
   fn raw_test_sony_arw() {
@@ -119,5 +137,10 @@ mod tests {
   #[test]
   fn raw_test_lumix_rw2() {
     println!("{}", PhotoLibMetadata::new("/home/tlhunter/Photographs/P1120849.RW2").to_string());
+  }
+
+  #[test]
+  fn xmp_test() {
+    println!("{:?}", extract_rating_from_xmp("/home/tlhunter/Photographs/Potrero Hill/2024-02-22 Marine One a7ii 40mm/DSC00151.ARW.xmp"));
   }
 }

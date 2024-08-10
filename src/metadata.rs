@@ -19,6 +19,7 @@ pub struct PhotoLibMetadata {
   aperture: String,
   shutter: String,
   iso: String,
+  rating: String,
 }
 
 impl PhotoLibMetadata {
@@ -42,13 +43,15 @@ impl PhotoLibMetadata {
       aperture: meta.get_tag_string("Exif.Photo.FNumber").unwrap(),
       shutter: meta.get_tag_string("Exif.Photo.ExposureTime").unwrap(),
       iso: meta.get_tag_string("Exif.Photo.ISOSpeedRatings").unwrap(),
+      rating: meta.get_tag_string("Exif.Image.Rating").unwrap_or_default(),
     }
   }
 
   pub fn to_string(&self) -> String {
     return format!(
-      "Date: {}\nCamera: {}\nLens: {}\nDetails: {} {} {} {}",
+      "Date: {}\nRating: {}\nCamera: {}\nLens: {}\nDetails: {} {} {} {}",
       self.date,
+      self.rating,
       self.camera,
       match &self.lens {
         None => "Unknown".to_owned(),
@@ -86,6 +89,64 @@ impl PhotoLibMetadata {
   }
 }
 
+/*
+pub struct PhotoRating {
+  rejected: bool,
+  rated: bool,
+  rating: u8, // should normally be 1 - 5, 0 means the other checks should have been used
+}
+
+impl PhotoRating {
+  pub fn new(rating: Result<String>) -> PhotoRating {
+    let Ok(rating) = rating.parse::<i8>() else {
+      return PhotoRating{
+        rejected: false,
+        rated: false,
+        rating: 0,
+      };
+    };
+
+    if rating <= -1 {
+      return PhotoRating{
+        rejected: true,
+        rated: true,
+        rating: 0,
+      };
+    } else if rating == 0 {
+      return PhotoRating{
+        rejected: false,
+        rated: false,
+        rating: 0,
+      };
+    } else if rating > 5 {
+      return PhotoRating{
+        rejected: false,
+        rated: true,
+        rating: 5,
+      };
+    } else {
+      return PhotoRating{
+        rejected: false,
+        rated: true,
+        rating: rating as u8,
+      };
+    }
+  }
+  pub fn to_string(&self) -> String {
+    if !self.rated {
+      return "unrated".to_owned();
+    } else if self.rejected {
+      return "rejected".to_owned();
+    } else {
+      return format!(
+        "{} / 5",
+        self.rating
+      );
+    }
+  }
+}
+  */
+
 fn exif_string_division(input: String) -> String {
     match input.split_once('/') {
       None => "Unknown".to_owned(),
@@ -105,6 +166,10 @@ fn convert_exif_date(input: String) -> String {
 }
 
 // TODO: this should be parsed as XML instead of using regex
+// -1 = user actively chose to reject this photo. photolib considers this delete worthy.
+//  0 = unrated?
+//  1 = user decided this photo is meh
+//  5 = user decided this photo deserves the highest rating
 pub fn extract_rating_from_xmp(path: &str)-> Option<i8> {
   let contents = fs::read_to_string(path).unwrap();
   let re = Regex::new(r#"xmp:Rating="(?<rating>.+)""#).unwrap();
@@ -141,6 +206,6 @@ mod tests {
 
   #[test]
   fn xmp_test() {
-    println!("{:?}", extract_rating_from_xmp("/home/tlhunter/Photographs/Potrero Hill/2024-02-22 Marine One a7ii 40mm/DSC00151.ARW.xmp"));
+    println!("Rating: {}", extract_rating_from_xmp("/home/tlhunter/Photographs/Potrero Hill/2024-02-22 Marine One a7ii 40mm/DSC00151.ARW.xmp").unwrap());
   }
 }

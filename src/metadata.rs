@@ -165,10 +165,13 @@ impl PhotoLibXmp {
     let raw_xmp = std::fs::read(path).unwrap();
     let raw_xmp = String::from_utf8(raw_xmp).unwrap();
     let meta = XmpMeta::from_str(&raw_xmp).unwrap();
+    let res = XmpMeta::register_namespace("http://darktable.sf.net/", "darktable");
+    println!("RESULT {:?}", res);
 
     println!("XMP {:?}", meta);
 
-    let foo = meta.property("darktable", "x/rdf/rdf:Description");
+    // TODO: what is the query syntax? Doesn't mention xpath?
+    let foo = meta.property("darktable:", "darktable:import_timestamp");
     println!("foo {:?}", foo);
 
     return PhotoLibXmp {
